@@ -1,7 +1,7 @@
-import React from 'react'
-import PostListItem from './PostListItem.tsx'
+import React, { memo } from 'react';
+import PostListItem from './PostListItem';
 
-function PostList({ list }) {
+const PostList = memo(({ list, onDeleteItem }) => {
   return (
     <div>
       <div className="totalCount">
@@ -9,13 +9,20 @@ function PostList({ list }) {
         <span>{list.length}</span>
       </div>
 
-      <ul className="postList">
-        {list.map((item, index) => (
-          <PostListItem key={index} item={item} />
-        ))}
-      </ul>
+      {list.length === 0 ? (
+        <div className="emptyPostList">
+          <i className="fa-regular fa-file fa-4x" />
+          <p>등록된 여행지가 없습니다</p>
+        </div>
+      ) : (
+        <ul className="postList">
+          {list.map(item => (
+            <PostListItem key={item} item={item} onDelete={onDeleteItem} />
+          ))}
+        </ul>
+      )}
     </div>
-  )
-}
+  );
+});
 
-export default PostList
+export default PostList;
