@@ -2,46 +2,29 @@ import React, { useCallback, useState } from 'react';
 import BaseForm from './components/BaseForm.jsx';
 import Header from './components/Header.jsx';
 import PostList from './components/PostList.jsx';
-
-const getData = () => {
-  const data = localStorage.getItem('data');
-  return data ? JSON.parse(localStorage.getItem('data')) : [];
-};
-
-const saveData = newData => {
-  localStorage.setItem('data', JSON.stringify(newData));
-};
+import { getData, saveData } from './utils/localStorage.js';
 
 export default function App() {
-  const [data, setData] = useState(getData);
-  const [inputValue, setInputValue] = useState('');
+  const [data, setData] = useState(getData('data'));
 
-  const handleSubmit = e => {
-    e.preventDefault(); // 새로고침 방지
-
+  const handleSubmit = inputValue => {
     // 유효성 검사
-    if (inputValue.trim().length < 2) {
-      alert('두 글자 이상 입력하세요.');
+    if (inputValue.trim() === '') {
+      alert('여행지를 입력하세요.');
       document.querySelector('input').focus();
       return;
     }
-
+    // 데이터 저장
     const newData = [...data, inputValue];
-
     setData(newData);
-    setInputValue('');
-    saveData(newData);
-  };
-
-  const handleChange = newInputValue => {
-    setInputValue(newInputValue);
+    saveData('data', newData);
   };
 
   const handleDeleteItem = useCallback(
     item => {
       const newData = data.filter(prev => prev !== item);
       setData(newData);
-      saveData(newData);
+      saveData('data', newData);
     },
     [data]
   );
@@ -50,7 +33,7 @@ export default function App() {
     <>
       <Header />
       <main className="mw">
-        <BaseForm onSubmit={handleSubmit} value={inputValue} onChange={handleChange} />
+        <BaseForm onSubmit={handleSubmit} />
         <PostList list={data} onDeleteItem={handleDeleteItem} />
       </main>
     </>
